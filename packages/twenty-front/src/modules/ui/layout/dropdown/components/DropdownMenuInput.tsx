@@ -77,6 +77,8 @@ export type DropdownMenuInputProps = HTMLInputProps & {
   hasError?: boolean;
 };
 
+// TODO: refactor this
+/** @deprecated */
 export const DropdownMenuInput = forwardRef<
   HTMLInputElement,
   DropdownMenuInputProps

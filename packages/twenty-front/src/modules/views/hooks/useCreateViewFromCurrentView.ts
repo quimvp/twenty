@@ -152,7 +152,9 @@ export const useCreateViewFromCurrentView = (viewBarComponentId?: string) => {
           const sourceViewCombinedFilterGroups = getViewFilterGroupsCombined(
             sourceView.id,
           );
-          const sourceViewCombinedFilters = getViewFiltersCombined(sourceView.id);
+          const sourceViewCombinedFilters = getViewFiltersCombined(
+            sourceView.id,
+          );
           const sourceViewCombinedSorts = getViewSortsCombined(sourceView.id);
 
           await createViewSortRecords(sourceViewCombinedSorts, newView);

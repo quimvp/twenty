@@ -10,14 +10,24 @@ import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
 import { NavigationDrawerAnimatedCollapseWrapper } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerAnimatedCollapseWrapper';
 import { isNavigationDrawerExpandedState } from '@/ui/navigation/states/isNavigationDrawerExpanded';
 import { isNonEmptyString } from '@sniptt/guards';
+import { MOBILE_VIEWPORT } from 'twenty-ui';
 import { NavigationDrawerCollapseButton } from './NavigationDrawerCollapseButton';
 
 const StyledContainer = styled.div`
   align-items: center;
   display: flex;
-  height: ${({ theme }) => theme.spacing(7)};
+  height: ${({ theme }) => theme.spacing(8)};
   user-select: none;
+
+  @media (max-width: ${MOBILE_VIEWPORT}px) {
+    height: ${({ theme }) => theme.spacing(8)};
+    width: ${({ theme }) => theme.spacing(8)};
+
+    align-items: center;
+    justify-content: center;
+  }
 `;
+
 const StyledSingleWorkspaceContainer = styled(StyledContainer)`
   gap: ${({ theme }) => theme.spacing(2)};
   padding: ${({ theme }) => theme.spacing(1)};

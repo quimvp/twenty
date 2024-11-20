@@ -29,36 +29,37 @@ const StyledAnimatedContainer = styled(motion.div)<{ isSettings?: boolean }>`
 
 const StyledContainer = styled.div<{
   isSettings?: boolean;
-  isMobile?: boolean;
 }>`
   box-sizing: border-box;
   display: flex;
-  flex-direction: ${({ isMobile }) => (isMobile ? 'row' : 'column')};
+  flex-direction: column;
   width: ${NAV_DRAWER_WIDTHS.menu.desktop.expanded}px;
   gap: ${({ theme }) => theme.spacing(3)};
   height: 100%;
-  padding: ${({ theme, isSettings, isMobile }) =>
-    isSettings
-      ? isMobile
-        ? theme.spacing(3, 8)
-        : theme.spacing(3, 8, 4, 0)
-      : theme.spacing(3, 2, 2)};
+  padding: ${({ theme, isSettings }) =>
+    isSettings ? theme.spacing(3, 8, 4, 0) : theme.spacing(3, 2, 2)};
 
   @media (max-width: ${MOBILE_VIEWPORT}px) {
     width: 100%;
-    padding-left: 20px;
-    padding-right: 20px;
+
+    flex-direction: row;
+
+    padding: ${({ theme }) => theme.spacing(3)};
   }
 `;
+
 const StyledItemsContainer = styled.div<{
   isMobile?: boolean;
 }>`
   display: flex;
-  flex-direction: ${({ isMobile }) => (isMobile ? 'row' : 'column')};
-  margin-bottom: auto;
+  flex-direction: column;
   overflow: hidden;
   gap: ${({ theme }) => theme.spacing(3)};
   flex: 1;
+
+  @media (max-width: ${MOBILE_VIEWPORT}px) {
+    flex-direction: row;
+  }
 `;
 
 export const NavigationDrawer = ({
@@ -109,7 +110,6 @@ export const NavigationDrawer = ({
     >
       <StyledContainer
         isSettings={isSettingsDrawer}
-        isMobile={isMobile}
         onMouseEnter={handleHover}
         onMouseLeave={handleMouseLeave}
       >

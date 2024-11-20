@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { IconSearch, IconSettings } from 'twenty-ui';
+import { IconSearch, IconSettings, MOBILE_VIEWPORT } from 'twenty-ui';
 
 import { useCommandMenu } from '@/command-menu/hooks/useCommandMenu';
 import { isCommandMenuOpenedState } from '@/command-menu/states/isCommandMenuOpenedState';
@@ -19,14 +19,16 @@ import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
 import styled from '@emotion/styled';
 import { useEffect } from 'react';
 
-const StyledMainSection = styled(NavigationDrawerSection)`
-  min-height: fit-content;
+const StyledContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: ${MOBILE_VIEWPORT}px) {
+    flex-direction: row;
+    height: ${({ theme }) => theme.spacing(8)};
+  }
 `;
 
-const StyledContainer = styled.div`
-  overflow-x: hidden;
-  overflow-y: auto;
-`;
 export const MainNavigationDrawerItems = () => {
   const isMobile = useIsMobile();
   const { toggleCommandMenu } = useCommandMenu();
@@ -54,14 +56,12 @@ export const MainNavigationDrawerItems = () => {
         : 'main';
 
   useEffect(() => {
-    if (isMobile) {
-      setIsNavigationDrawerExpanded(false);
-    }
+    setIsNavigationDrawerExpanded(!isMobile);
   }, [isMobile, setIsNavigationDrawerExpanded]);
 
   return (
     <>
-      <NavigationDrawerSection isMobile={isMobile}>
+      <NavigationDrawerSection>
         <NavigationDrawerItem
           label="Search"
           Icon={IconSearch}

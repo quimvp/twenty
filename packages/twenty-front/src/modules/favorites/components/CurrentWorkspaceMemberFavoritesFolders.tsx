@@ -22,10 +22,17 @@ import { DraggableItem } from '@/ui/layout/draggable-list/components/DraggableIt
 import { DraggableList } from '@/ui/layout/draggable-list/components/DraggableList';
 import { NavigationDrawerAnimatedCollapseWrapper } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerAnimatedCollapseWrapper';
 import { NavigationDrawerItem } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerItem';
-import { NavigationDrawerSection } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerSection';
 import { NavigationDrawerSectionTitle } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerSectionTitle';
 import { useNavigationSection } from '@/ui/navigation/navigation-drawer/hooks/useNavigationSection';
 import { useIsFeatureEnabled } from '@/workspace/hooks/useIsFeatureEnabled';
+import styled from '@emotion/styled';
+
+const StyledFavoriteContainer = styled.div`
+  border: 1px solid ${({ theme }) => theme.border.color.light};
+  display: flex;
+
+  flex-direction: column;
+`;
 
 export const CurrentWorkspaceMemberFavoritesFolders = () => {
   const currentPath = useLocation().pathname;
@@ -72,7 +79,7 @@ export const CurrentWorkspaceMemberFavoritesFolders = () => {
   }
 
   return (
-    <NavigationDrawerSection>
+    <>
       <NavigationDrawerAnimatedCollapseWrapper>
         <NavigationDrawerSectionTitle
           label="Favorites"
@@ -87,7 +94,6 @@ export const CurrentWorkspaceMemberFavoritesFolders = () => {
           }
         />
       </NavigationDrawerAnimatedCollapseWrapper>
-
       {isNavigationSectionOpen && (
         <>
           {isFavoriteFolderEnabled && (
@@ -97,41 +103,43 @@ export const CurrentWorkspaceMemberFavoritesFolders = () => {
           )}
 
           {orphanFavorites.length > 0 && (
-            <DraggableList
-              onDragEnd={handleReorderFavorite}
-              draggableItems={orphanFavorites.map((favorite, index) => (
-                <DraggableItem
-                  key={favorite.id}
-                  draggableId={favorite.id}
-                  index={index}
-                  itemComponent={
-                    <NavigationDrawerItem
-                      key={favorite.id}
-                      className="navigation-drawer-item"
-                      label={favorite.labelIdentifier}
-                      Icon={() => <FavoriteIcon favorite={favorite} />}
-                      active={isLocationMatchingFavorite(
-                        currentPath,
-                        currentViewPath,
-                        favorite,
-                      )}
-                      to={favorite.link}
-                      rightOptions={
-                        <LightIconButton
-                          Icon={IconHeartOff}
-                          onClick={() => deleteFavorite(favorite.id)}
-                          accent="tertiary"
-                        />
-                      }
-                      isDraggable={true}
-                    />
-                  }
-                />
-              ))}
-            />
+            <StyledFavoriteContainer>
+              <DraggableList
+                onDragEnd={handleReorderFavorite}
+                draggableItems={orphanFavorites.map((favorite, index) => (
+                  <DraggableItem
+                    key={favorite.id}
+                    draggableId={favorite.id}
+                    index={index}
+                    itemComponent={
+                      <NavigationDrawerItem
+                        key={favorite.id}
+                        className="navigation-drawer-item"
+                        label={favorite.labelIdentifier}
+                        Icon={() => <FavoriteIcon favorite={favorite} />}
+                        active={isLocationMatchingFavorite(
+                          currentPath,
+                          currentViewPath,
+                          favorite,
+                        )}
+                        to={favorite.link}
+                        rightOptions={
+                          <LightIconButton
+                            Icon={IconHeartOff}
+                            onClick={() => deleteFavorite(favorite.id)}
+                            accent="tertiary"
+                          />
+                        }
+                        isDraggable={true}
+                      />
+                    }
+                  />
+                ))}
+              />
+            </StyledFavoriteContainer>
           )}
         </>
       )}
-    </NavigationDrawerSection>
+    </>
   );
 };

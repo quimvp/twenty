@@ -158,8 +158,16 @@ const StyledNavigationDrawerItemContainer = styled.div<{
   isMobile?: boolean;
 }>`
   display: flex;
-  width: ${({ isMobile }) => (isMobile ? 'auto' : '100%')};
-  flex-grow: ${({ isMobile }) => (isMobile ? 1 : 0)};
+  width: 100%;
+  flex-grow: 0;
+
+  @media (max-width: ${MOBILE_VIEWPORT}px) {
+    width: ${({ theme }) => theme.spacing(8)};
+    height: ${({ theme }) => theme.spacing(8)};
+
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 const StyledSpacer = styled.span`
@@ -167,12 +175,10 @@ const StyledSpacer = styled.span`
 `;
 
 const StyledRightOptionsContainer = styled.div<{
-  isMobile: boolean;
   active: boolean;
 }>`
   margin-left: auto;
-  visibility: ${({ isMobile, active }) =>
-    isMobile || active ? 'visible' : 'hidden'};
+  visibility: ${({ active }) => (active ? 'visible' : 'hidden')};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -184,6 +190,10 @@ const StyledRightOptionsContainer = styled.div<{
   border-radius: ${({ theme }) => theme.border.radius.sm};
   .navigation-drawer-item:hover & {
     visibility: visible;
+  }
+
+  @media (max-width: ${MOBILE_VIEWPORT}px) {
+    visibility: 'visible';
   }
 `;
 
@@ -283,7 +293,6 @@ export const NavigationDrawerItem = ({
           <NavigationDrawerAnimatedCollapseWrapper>
             {rightOptions && (
               <StyledRightOptionsContainer
-                isMobile={isMobile}
                 active={active || false}
                 onClick={(e) => {
                   e.stopPropagation();

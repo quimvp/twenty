@@ -86,7 +86,7 @@ export class ClientConfig {
   signInPrefilled: boolean;
 
   @Field(() => Boolean)
-  signUpDisabled: boolean;
+  isMultiWorkspaceEnabled: boolean;
 
   @Field(() => Boolean)
   debugMode: boolean;

@@ -15,7 +15,7 @@ export const GET_CLIENT_CONFIG = gql`
         billingFreeTrialDurationInDays
       }
       signInPrefilled
-      signUpDisabled
+      isMultiWorkspaceEnabled
       debugMode
       analyticsEnabled
       support {

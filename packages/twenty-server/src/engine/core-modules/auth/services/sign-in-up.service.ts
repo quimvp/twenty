@@ -48,8 +48,6 @@ export class SignInUpService {
     private readonly fileUploadService: FileUploadService,
     @InjectRepository(Workspace, 'core')
     private readonly workspaceRepository: Repository<Workspace>,
-    @InjectRepository(AppToken, 'core')
-    private readonly appTokenRepository: Repository<AppToken>,
     @InjectRepository(User, 'core')
     private readonly userRepository: Repository<User>,
     private readonly userWorkspaceService: UserWorkspaceService,
@@ -297,11 +295,16 @@ export class SignInUpService {
     lastName: string;
     picture: SignInUpServiceInput['picture'];
   }) {
-    if (this.environmentService.get('IS_SIGN_UP_DISABLED')) {
-      throw new AuthException(
-        'Sign up is disabled',
-        AuthExceptionCode.FORBIDDEN_EXCEPTION,
-      );
+    if (!this.environmentService.get('IS_MULTIWORKSPACE_ENABLED')) {
+      const workspacesCount = await this.workspaceRepository.count();
+
+      // let the creation of the first workspace
+      if (workspacesCount > 0) {
+        throw new AuthException(
+          'New workspace setup is disabled',
+          AuthExceptionCode.FORBIDDEN_EXCEPTION,
+        );
+      }
     }
 
     const workspaceToCreate = this.workspaceRepository.create({

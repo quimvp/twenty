@@ -1,6 +1,7 @@
 import { useFilteredObjectMetadataItems } from '@/object-metadata/hooks/useFilteredObjectMetadataItems';
 import { FormFieldInput } from '@/object-record/record-field/components/FormFieldInput';
 import { Select, SelectOption } from '@/ui/input/components/Select';
+import { SingleEntitySelectWithVariables } from '@/workflow/components/SingleEntitySelectWithVariables';
 import { WorkflowEditGenericFormBase } from '@/workflow/components/WorkflowEditGenericFormBase';
 import { WorkflowRecordCreateAction } from '@/workflow/types/Workflow';
 import { useTheme } from '@emotion/react';
@@ -162,6 +163,12 @@ export const WorkflowEditActionFormRecordCreate = ({
       />
 
       <HorizontalSeparator noMargin />
+
+      <SingleEntitySelectWithVariables
+        label="Record"
+        onPersist={(value) => {}}
+        objectNameSingular={formData.objectName}
+      />
 
       {editableFields.map((field) => (
         <FormFieldInput

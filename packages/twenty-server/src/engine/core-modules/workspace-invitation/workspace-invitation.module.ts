@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
 
@@ -8,14 +8,18 @@ import { UserWorkspace } from 'src/engine/core-modules/user-workspace/user-works
 import { WorkspaceInvitationService } from 'src/engine/core-modules/workspace-invitation/services/workspace-invitation.service';
 import { WorkspaceInvitationResolver } from 'src/engine/core-modules/workspace-invitation/workspace-invitation.resolver';
 import { Workspace } from 'src/engine/core-modules/workspace/workspace.entity';
+import { UrlManagerModule } from 'src/engine/core-modules/url-manager/url-manager.module';
+import { WorkspaceModule } from 'src/engine/core-modules/workspace/workspace.module';
 
 @Module({
   imports: [
+    UrlManagerModule,
     NestjsQueryTypeOrmModule.forFeature(
       [AppToken, UserWorkspace, Workspace],
       'core',
     ),
     OnboardingModule,
+    forwardRef(() => WorkspaceModule),
   ],
   exports: [WorkspaceInvitationService],
   providers: [WorkspaceInvitationService, WorkspaceInvitationResolver],

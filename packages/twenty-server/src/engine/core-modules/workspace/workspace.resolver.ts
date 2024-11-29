@@ -34,7 +34,11 @@ import {
   WorkspaceExceptionCode,
 } from 'src/engine/core-modules/workspace/workspace.exception';
 import { PublicWorkspaceDataOutput } from 'src/engine/core-modules/workspace/dtos/public-workspace-data.output';
+import { ActivateWorkspaceOutput } from 'src/engine/core-modules/workspace/dtos/activate-workspace-output';
+import { OriginHeader } from 'src/engine/decorators/auth/origin-header.decorator';
 import { workspaceValidator } from 'src/engine/core-modules/workspace/workspace.validate';
+import { WorkspaceGettersService } from 'src/engine/core-modules/workspace/services/workspace-getters.service';
+import { LoginTokenService } from 'src/engine/core-modules/auth/token/services/login-token.service';
 
 import { Workspace } from './workspace.entity';
 
@@ -44,6 +48,8 @@ import { WorkspaceService } from './services/workspace.service';
 export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
+    private readonly loginTokenService: LoginTokenService,
+    private readonly workspaceGettersService: WorkspaceGettersService,
     private readonly userWorkspaceService: UserWorkspaceService,
     private readonly environmentService: EnvironmentService,
     private readonly fileUploadService: FileUploadService,
@@ -61,13 +67,21 @@ export class WorkspaceResolver {
     return workspace;
   }
 
-  @Mutation(() => Workspace)
+  @Mutation(() => ActivateWorkspaceOutput)
   @UseGuards(UserAuthGuard)
   async activateWorkspace(
     @Args('data') data: ActivateWorkspaceInput,
     @AuthUser() user: User,
   ) {
-    return await this.workspaceService.activateWorkspace(user, data);
+    const workspace = await this.workspaceService.activateWorkspace(user, data);
+    const loginToken = await this.loginTokenService.generateLoginToken(
+      user.email,
+    );
+
+    return {
+      workspace,
+      loginToken,
+    };
   }
 
   @Mutation(() => Workspace)
@@ -154,8 +168,9 @@ export class WorkspaceResolver {
   }
 
   @Query(() => PublicWorkspaceDataOutput)
-  async getPublicWorkspaceDataBySubdomain() {
-    const workspace = await this.workspaceService.getWorkspaceByOrigin();
+  async getPublicWorkspaceDataBySubdomain(@OriginHeader() origin: string) {
+    const workspace =
+      await this.workspaceGettersService.getWorkspaceByOrigin(origin);
 
     workspaceValidator.assertIsExist(
       workspace,
@@ -169,9 +184,11 @@ export class WorkspaceResolver {
       id: workspace.id,
       logo: workspace.logo,
       displayName: workspace.displayName,
-      authProviders: await this.workspaceService.getAuthProvidersByWorkspaceId(
-        workspace.id,
-      ),
+      subdomain: workspace.subdomain,
+      authProviders:
+        await this.workspaceGettersService.getAuthProvidersByWorkspaceId(
+          workspace.id,
+        ),
     };
   }
 }

@@ -11,12 +11,14 @@ import { UserWorkspace } from 'src/engine/core-modules/user-workspace/user-works
 import { User } from 'src/engine/core-modules/user/user.entity';
 import { Workspace } from 'src/engine/core-modules/workspace/workspace.entity';
 import { assert } from 'src/utils/assert';
+import { UrlManagerService } from 'src/engine/core-modules/url-manager/service/url-manager.service';
 
 @Injectable()
 export class BillingPortalWorkspaceService {
   protected readonly logger = new Logger(BillingPortalWorkspaceService.name);
   constructor(
     private readonly stripeService: StripeService,
+    private readonly urlManagerService: UrlManagerService,
     private readonly environmentService: EnvironmentService,
     @InjectRepository(BillingSubscription, 'core')
     private readonly billingSubscriptionRepository: Repository<BillingSubscription>,
@@ -31,7 +33,7 @@ export class BillingPortalWorkspaceService {
     priceId: string,
     successUrlPath?: string,
   ): Promise<string> {
-    const frontBaseUrl = this.environmentService.get('FRONT_BASE_URL');
+    const frontBaseUrl = this.urlManagerService.getBaseUrl().toString();
     const successUrl = successUrlPath
       ? frontBaseUrl + successUrlPath
       : frontBaseUrl;
@@ -81,7 +83,7 @@ export class BillingPortalWorkspaceService {
       throw new Error('Error: missing stripeCustomerId');
     }
 
-    const frontBaseUrl = this.environmentService.get('FRONT_BASE_URL');
+    const frontBaseUrl = this.urlManagerService.getBaseUrl().toString();
     const returnUrl = returnUrlPath
       ? frontBaseUrl + returnUrlPath
       : frontBaseUrl;

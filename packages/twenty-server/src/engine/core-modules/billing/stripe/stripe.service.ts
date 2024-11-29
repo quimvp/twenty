@@ -7,17 +7,20 @@ import { BillingSubscriptionItem } from 'src/engine/core-modules/billing/entitie
 import { AvailableProduct } from 'src/engine/core-modules/billing/enums/billing-available-product.enum';
 import { EnvironmentService } from 'src/engine/core-modules/environment/environment.service';
 import { User } from 'src/engine/core-modules/user/user.entity';
+import { UrlManagerService } from 'src/engine/core-modules/url-manager/service/url-manager.service';
 
 @Injectable()
 export class StripeService {
   protected readonly logger = new Logger(StripeService.name);
   private readonly stripe: Stripe;
 
-  constructor(private readonly environmentService: EnvironmentService) {
+  constructor(
+    private readonly environmentService: EnvironmentService,
+    private readonly urlManagerService: UrlManagerService,
+  ) {
     if (!this.environmentService.get('IS_BILLING_ENABLED')) {
       return;
     }
-
     this.stripe = new Stripe(
       this.environmentService.get('BILLING_STRIPE_API_KEY'),
       {},
@@ -74,7 +77,7 @@ export class StripeService {
   ): Promise<Stripe.BillingPortal.Session> {
     return await this.stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
-      return_url: returnUrl ?? this.environmentService.get('FRONT_BASE_URL'),
+      return_url: returnUrl ?? this.urlManagerService.getBaseUrl().toString(),
     });
   }
 

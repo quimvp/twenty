@@ -127,13 +127,27 @@ export class EnvironmentVariables {
   PG_SSL_ALLOW_SELF_SIGNED = false;
 
   // Frontend URL
-  @IsUrl({ require_tld: false })
-  FRONT_BASE_URL: string;
+  @IsString()
+  @IsOptional()
+  FRONT_DOMAIN = 'localhost';
+
+  @IsString()
+  @ValidateIf((env) => env.IS_MULTIWORKSPACE_ENABLED)
+  DEFAULT_SUBDOMAIN = 'app';
+
+  @IsString()
+  @IsOptional()
+  FRONT_PROTOCOL: 'http' | 'https' = 'http';
+
+  @CastToPositiveNumber()
+  @IsNumber()
+  @IsOptional()
+  FRONT_PORT = 3001;
 
   // Server URL
   @IsUrl({ require_tld: false })
   @IsOptional()
-  SERVER_URL: string;
+  SERVER_URL = 'http://localhost:3000';
 
   @IsString()
   APP_SECRET: string;
@@ -475,6 +489,15 @@ export class EnvironmentVariables {
   // milliseconds
   @CastToPositiveNumber()
   SERVERLESS_FUNCTION_EXEC_THROTTLE_TTL = 1000;
+
+  // SSL
+  @IsString()
+  @IsOptional()
+  SSL_KEY_PATH: string;
+
+  @IsString()
+  @IsOptional()
+  SSL_CERT_PATH: string;
 }
 
 export const validate = (

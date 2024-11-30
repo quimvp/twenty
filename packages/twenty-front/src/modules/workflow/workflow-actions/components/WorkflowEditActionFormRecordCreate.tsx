@@ -81,6 +81,7 @@ export const WorkflowEditActionFormRecordCreate = ({
   const selectedObjectMetadataItem = activeObjectMetadataItems.find(
     (item) => item.nameSingular === selectedObjectMetadataItemNameSingular,
   );
+
   if (!isDefined(selectedObjectMetadataItem)) {
     throw new Error('Should have found the metadata item');
   }
@@ -139,6 +140,7 @@ export const WorkflowEditActionFormRecordCreate = ({
         <IconAddressBook
           color={theme.font.color.tertiary}
           stroke={theme.icon.stroke.sm}
+          size={theme.icon.size.lg}
         />
       }
       headerTitle={headerTitle}

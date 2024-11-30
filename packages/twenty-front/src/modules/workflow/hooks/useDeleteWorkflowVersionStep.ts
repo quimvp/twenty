@@ -1,20 +1,20 @@
 import { useApolloClient, useMutation } from '@apollo/client';
 import {
-  UpdateWorkflowVersionStepInput,
-  UpdateWorkflowVersionStepMutation,
-  UpdateWorkflowVersionStepMutationVariables,
+  DeleteWorkflowVersionStepMutation,
+  DeleteWorkflowVersionStepMutationVariables,
+  DeleteWorkflowVersionStepInput,
   WorkflowAction,
 } from '~/generated/graphql';
-import { UPDATE_WORKFLOW_VERSION_STEP } from '@/workflow/graphql/mutations/updateWorkflowVersionStep';
-import { updateRecordFromCache } from '@/object-record/cache/utils/updateRecordFromCache';
+import { DELETE_WORKFLOW_VERSION_STEP } from '@/workflow/graphql/mutations/deleteWorkflowVersionStep';
+import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
 import { useObjectMetadataItems } from '@/object-metadata/hooks/useObjectMetadataItems';
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
-import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
-import { ObjectRecord } from '@/object-record/types/ObjectRecord';
 import { useGetRecordFromCache } from '@/object-record/cache/hooks/useGetRecordFromCache';
 import { isDefined } from 'twenty-ui';
+import { ObjectRecord } from '@/object-record/types/ObjectRecord';
+import { updateRecordFromCache } from '@/object-record/cache/utils/updateRecordFromCache';
 
-export const useUpdateWorkflowVersionStep = () => {
+export const useDeleteWorkflowVersionStep = () => {
   const apolloClient = useApolloClient();
   const { objectMetadataItems } = useObjectMetadataItems();
   const { objectMetadataItem } = useObjectMetadataItem({
@@ -24,18 +24,17 @@ export const useUpdateWorkflowVersionStep = () => {
     objectNameSingular: CoreObjectNameSingular.WorkflowVersion,
   });
   const [mutate] = useMutation<
-    UpdateWorkflowVersionStepMutation,
-    UpdateWorkflowVersionStepMutationVariables
-  >(UPDATE_WORKFLOW_VERSION_STEP, {
+    DeleteWorkflowVersionStepMutation,
+    DeleteWorkflowVersionStepMutationVariables
+  >(DELETE_WORKFLOW_VERSION_STEP, {
     client: apolloClient,
   });
-
-  const updateWorkflowVersionStep = async (
-    input: UpdateWorkflowVersionStepInput,
+  const deleteWorkflowVersionStep = async (
+    input: DeleteWorkflowVersionStepInput,
   ) => {
     const result = await mutate({ variables: { input } });
-    const updatedStep = result?.data?.updateWorkflowVersionStep;
-    if (!isDefined(updatedStep)) {
+    const deletedStep = result?.data?.deleteWorkflowVersionStep;
+    if (!isDefined(deletedStep)) {
       return;
     }
 
@@ -48,16 +47,8 @@ export const useUpdateWorkflowVersionStep = () => {
 
     const newCachedRecord = {
       ...cachedRecord,
-      steps: (cachedRecord.steps || []).reduce(
-        (acc: WorkflowAction[], step: WorkflowAction) => {
-          if (step.id === updatedStep.id) {
-            acc.push(updatedStep);
-          } else {
-            acc.push(step);
-          }
-          return acc;
-        },
-        [],
+      steps: (cachedRecord.steps || []).filter(
+        (step: WorkflowAction) => step.id !== deletedStep.id,
       ),
     };
 
@@ -67,8 +58,7 @@ export const useUpdateWorkflowVersionStep = () => {
       cache: apolloClient.cache,
       record: newCachedRecord,
     });
-    return result;
   };
 
-  return { updateWorkflowVersionStep };
+  return { deleteWorkflowVersionStep };
 };

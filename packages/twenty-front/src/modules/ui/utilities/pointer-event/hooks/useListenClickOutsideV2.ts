@@ -178,6 +178,7 @@ export const useListenClickOutsideV2 = <T extends Element>({
             !isMouseDownInside &&
             !isClickedOnExcluded
           ) {
+            console.log('clicked outside ref for id ' + listenerId, { event });
             callback(event);
           }
         }
@@ -219,6 +220,9 @@ export const useListenClickOutsideV2 = <T extends Element>({
             isListening &&
             hasMouseDownHappened
           ) {
+            console.log('clicked outside pixel for id ' + listenerId, {
+              event,
+            });
             callback(event);
           }
         }
@@ -233,6 +237,7 @@ export const useListenClickOutsideV2 = <T extends Element>({
       refs,
       excludeClassNames,
       callback,
+      listenerId,
     ],
   );
 

@@ -5,7 +5,7 @@ import { E164Number, parsePhoneNumber } from 'libphonenumber-js';
 import { useMemo } from 'react';
 import ReactPhoneNumberInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
-import { isDefined, TEXT_INPUT_STYLE } from 'twenty-ui';
+import { TEXT_INPUT_STYLE, isDefined } from 'twenty-ui';
 
 import { MultiItemFieldInput } from './MultiItemFieldInput';
 
@@ -48,33 +48,40 @@ type PhonesFieldInputProps = {
 };
 
 export const PhonesFieldInput = ({ onCancel }: PhonesFieldInputProps) => {
-  const { persistPhonesField, hotkeyScope, fieldValue } = usePhonesField();
+  const { persistPhonesField, hotkeyScope, draftValue, fieldDefinition } =
+    usePhonesField();
 
-  const phones = useMemo<{ number: string; countryCode: string }[]>(
+  // console.log('before phones draftvalue', draftValue);
+
+  const phones = useMemo<{ number: string; callingCode: string }[]>(
     () =>
       [
-        fieldValue.primaryPhoneNumber
+        draftValue?.primaryPhoneCountryCode
           ? {
-              number: fieldValue.primaryPhoneNumber,
-              countryCode: fieldValue.primaryPhoneCountryCode,
+              number: draftValue.primaryPhoneNumber,
+              callingCode: draftValue.primaryPhoneCountryCode,
             }
           : null,
-        ...(fieldValue.additionalPhones ?? []),
+        ...(draftValue?.additionalPhones ?? []),
       ].filter(isDefined),
     [
-      fieldValue.primaryPhoneNumber,
-      fieldValue.primaryPhoneCountryCode,
-      fieldValue.additionalPhones,
+      draftValue?.primaryPhoneNumber,
+      draftValue?.primaryPhoneCountryCode,
+      draftValue?.additionalPhones,
     ],
   );
 
+  // todo: in order to have defaut country when adding a new phone, we should use the user's country
+  const defaultCallingCode =
+    fieldDefinition?.defaultValue?.primaryPhoneCountryCode ?? '+1';
+
   const handlePersistPhones = (
-    updatedPhones: { number: string; countryCode: string }[],
+    updatedPhones: { number: string; callingCode: string }[],
   ) => {
     const [nextPrimaryPhone, ...nextAdditionalPhones] = updatedPhones;
     persistPhonesField({
       primaryPhoneNumber: nextPrimaryPhone?.number ?? '',
-      primaryPhoneCountryCode: nextPrimaryPhone?.countryCode ?? '',
+      primaryPhoneCountryCode: nextPrimaryPhone?.callingCode ?? '',
       additionalPhones: nextAdditionalPhones,
     });
   };
@@ -93,12 +100,12 @@ export const PhonesFieldInput = ({ onCancel }: PhonesFieldInputProps) => {
         if (phone !== undefined) {
           return {
             number: phone.nationalNumber,
-            countryCode: `+${phone.countryCallingCode}`,
+            callingCode: `${phone.countryCallingCode}`,
           };
         }
         return {
           number: '',
-          countryCode: '',
+          callingCode: '',
         };
       }}
       renderItem={({
